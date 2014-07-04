@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sites>
+	<site name="test" sypex="http://test.com/sxd/index.php?skip=1" filelist="http://test.com/backup_file_list.php" backupLocation="http://test.com/sxd/backup/" />
+</sites>
