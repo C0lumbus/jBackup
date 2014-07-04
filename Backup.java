@@ -55,6 +55,9 @@ public class Backup extends JFrame {
 
 			results.append("Making backup of " + sitesBox.getSelectedItem() + "\n");
 
+			downloaded.setValue(0);
+			downloaded.setString("20 seconds pause");
+
 			try {
 				runBackup = new URLConnectionReader(sxdUrl);
 			} catch (Exception e1) {
