@@ -49,12 +49,7 @@ public class Backup extends JFrame {
 
 		public Integer doInBackground() throws Exception {
 			String selectedItem = sitesBox.getSelectedItem().toString();
-			System.out.println("Test");
-
-			System.out.println(selectedItem);
-
 			if(selectedItem == "All") {
-				System.out.println(selectedItem);
 				runComplexBackup();
 			}
 			else {
@@ -169,8 +164,6 @@ public class Backup extends JFrame {
 		}
 
 		private void runComplexBackup() {
-
-			System.out.println("Run complex backup");
 			Integer totalItems = sitesBox.getItemCount();
 
 			for (int i = 0; i < totalItems - 1; i++) {
