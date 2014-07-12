@@ -48,35 +48,73 @@ public class Backup extends JFrame {
 		public URLConnectionReader runBackup;
 
 		public Integer doInBackground() throws Exception {
-			Integer siteIndex = sitesBox.getSelectedIndex();
-			String fileListUrl = sites.get(siteIndex).fileListUrl;
-			String sxdUrl = sites.get(siteIndex).sxdUrl;
-			String backupLocation = sites.get(siteIndex).backupLocation;
+			String selectedItem = sitesBox.getSelectedItem().toString();
+			System.out.println("Test");
 
-			results.append("Making backup of " + sitesBox.getSelectedItem() + "\n");
+			System.out.println(selectedItem);
 
-			downloaded.setValue(0);
-			downloaded.setString("20 seconds pause");
+			if(selectedItem == "All") {
+				System.out.println(selectedItem);
+				runComplexBackup();
+			}
+			else {
+				Integer siteIndex = sitesBox.getSelectedIndex();
+				String fileListUrl = sites.get(siteIndex).fileListUrl;
+				String sxdUrl = sites.get(siteIndex).sxdUrl;
+				String backupLocation = sites.get(siteIndex).backupLocation;
 
-			try {
-				runBackup = new URLConnectionReader(sxdUrl);
-			} catch (Exception e1) {
-				e1.printStackTrace();
+				results.append("Making backup of " + sitesBox.getSelectedItem() + "\n");
+
+				downloaded.setValue(0);
+				downloaded.setString("20 seconds pause");
+
+				makeBackup(sxdUrl);
+
+				try {
+					results.append("Waiting 20 seconds before downloading backups\n");
+					Thread.sleep(20000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+
+				filesList = getBackupList(fileListUrl);
+
+				downloadFiles(backupLocation);
 			}
 
-			try {
-				results.append("Waiting 20 seconds before downloading backups\n");
-				Thread.sleep(20000);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
+			return null;
+		}
 
+		/**
+		 * Get list of backup files (archives).
+		 *
+		 * @param fileListUrl
+		 * @return list of files
+		 */
+		private URLConnectionReader getBackupList(String fileListUrl) {
 			try {
 				filesList = new URLConnectionReader(fileListUrl);
 			} catch (Exception e1) {
 				e1.printStackTrace();
 			}
 
+			return filesList;
+		}
+
+		/**
+		 * Execute backup script
+		 *
+		 * @param sxdUrl
+		 */
+		private void makeBackup(String sxdUrl) {
+			try {
+				runBackup = new URLConnectionReader(sxdUrl);
+			} catch (Exception e1) {
+				e1.printStackTrace();
+			}
+		}
+
+		private void downloadFiles(String backupLocation) {
 			int counter = 1;
 			int userFileCount = filesList.files.size();
 
@@ -128,8 +166,37 @@ public class Backup extends JFrame {
 				}
 				downloaded.setValue(counter);
 			}
+		}
 
-			return null;
+		private void runComplexBackup() {
+
+			System.out.println("Run complex backup");
+			Integer totalItems = sitesBox.getItemCount();
+
+			for (int i = 0; i < totalItems - 1; i++) {
+				String fileListUrl = sites.get(i).fileListUrl;
+				String sxdUrl = sites.get(i).sxdUrl;
+				String backupLocation = sites.get(i).backupLocation;
+				String selectedName = sitesBox.getItemAt(i).toString();
+
+				results.append("Making backup of " + selectedName + "\n");
+
+				downloaded.setValue(0);
+				downloaded.setString("20 seconds pause");
+
+				makeBackup(sxdUrl);
+
+				try {
+					results.append("Waiting 20 seconds before downloading backups\n");
+					Thread.sleep(20000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+
+				filesList = getBackupList(fileListUrl);
+
+				downloadFiles(backupLocation);
+			}
 		}
 
 		public void done() {
@@ -192,6 +259,8 @@ public class Backup extends JFrame {
 
 			sitesBox.addItem(new ComboItem(siteName, Integer.toString(temp)));
 		}
+
+		sitesBox.addItem(new ComboItem("All", "All"));
 
 
 		setContentPane(rootPanel);
